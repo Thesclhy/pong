@@ -93,17 +93,15 @@ counter = 0.0f;
 
 bool pat1Win;
 
-glm::vec3 g_rotation_yui = glm::vec3(0.0f, 0.0f, 0.0f),
-g_rotation_gitai = glm::vec3(0.0f, 0.0f, 0.0f),
-pat1_movement = glm::vec3(0.0f, 0.0f, 0.0f),
+glm::vec3 pat1_movement = glm::vec3(0.0f, 0.0f, 0.0f),
 pat1_pos = glm::vec3(4.8f, 0.0f, 0.0f),
 pat2_movement = glm::vec3(0.0f, 0.0f, 0.0f),
 pat2_pos = glm::vec3(-4.8f, 0.0f, 0.0f),
 ball_pos1 = glm::vec3(0.0f,0.0f,0.0f),
 ball_movement1 = glm::vec3(1.0f, 0.0f, 0.0f),
-ball_pos2 = glm::vec3(0.0f, 0.0f, 0.0f),
+ball_pos2 = glm::vec3(0.0f, 1.0f, 0.0f),
 ball_movement2 = glm::vec3(1.0f, 0.0f, 0.0f),
-ball_pos3 = glm::vec3(0.0f, 0.0f, 0.0f),
+ball_pos3 = glm::vec3(0.0f, -1.0f, 0.0f),
 ball_movement3= glm::vec3(1.0f, 0.0f, 0.0f);
 
 GLuint g_pat1_texture_id,
@@ -238,17 +236,34 @@ void process_input()
                 }; break;
             case SDLK_1: 
                 ballNum = 1; 
-                ball_pos2 = glm::vec3(0.0f, 0.0f, 0.0f),
+                ball_pos2 = glm::vec3(0.0f, 1.0f, 0.0f),
                 ball_movement2 = glm::vec3(1.0f, 0.0f, 0.0f),
-                ball_pos3 = glm::vec3(0.0f, 0.0f, 0.0f),
+                ball_pos3 = glm::vec3(0.0f, -1.0f, 0.0f),
                 ball_movement3 = glm::vec3(1.0f, 0.0f, 0.0f);
                 break;
             case SDLK_2: 
                 ballNum = 2;  
-                ball_pos3 = glm::vec3(0.0f, 0.0f, 0.0f),
+                ball_pos3 = glm::vec3(0.0f, -1.0f, 0.0f),
                 ball_movement3 = glm::vec3(1.0f, 0.0f, 0.0f); 
                 break;
             case SDLK_3: ballNum = 3; break;
+            case SDLK_r:
+                if (gamestate == LEFTPATWIN || gamestate == RIGHTPATWIN) {
+                    pat1_movement = glm::vec3(0.0f, 0.0f, 0.0f),
+                    pat1_pos = glm::vec3(4.8f, 0.0f, 0.0f),
+                    pat2_movement = glm::vec3(0.0f, 0.0f, 0.0f),
+                    pat2_pos = glm::vec3(-4.8f, 0.0f, 0.0f),
+                    ball_pos1 = glm::vec3(0.0f, 0.0f, 0.0f),
+                    ball_movement1 = glm::vec3(1.0f, 0.0f, 0.0f),
+                    ball_pos2 = glm::vec3(0.0f, 1.0f, 0.0f),
+                    ball_movement2 = glm::vec3(1.0f, 0.0f, 0.0f),
+                    ball_pos3 = glm::vec3(0.0f, -1.0f, 0.0f),
+                    ball_movement3 = glm::vec3(1.0f, 0.0f, 0.0f);
+                    gamemode = TWOPLAYER;
+                    ballNum = 1;
+                    gamestate = PLAYING;
+                }
+                break;
 
             default: break;
 
@@ -332,10 +347,10 @@ void update()
                 ballPosVec[i]->y = -3.49f;
                 ballMovementVec[i]->y = -ballMovementVec[i]->y;
             }
-            if (ballPosVec[i]->x > 4.8f) {
+            if (ballPosVec[i]->x > 4.8f && gamestate == PLAYING) {
                 gamestate = LEFTPATWIN;
             }
-            else if (ballPosVec[i]->x < -4.8f) {
+            else if (ballPosVec[i]->x < -4.8f && gamestate == PLAYING) {
                 gamestate = RIGHTPATWIN;
             }
             *ballMatrixVec[i] = glm::translate(*ballMatrixVec[i], *ballPosVec[i]);
@@ -373,6 +388,9 @@ void update()
     else if (gamestate == LEFTPATWIN){
         leftWin_matrix = glm::mat4(1.0f);
         leftWin_matrix = glm::scale(leftWin_matrix, INIT_WINPIC_SCALE);
+    }
+    else {
+        return;
     }
 }
 
@@ -423,7 +441,7 @@ void render()
     else if (gamestate == RIGHTPATWIN){
         draw_object(rightWin_matrix, rightWin_texture_id);
     }
-    else if (gamestate == LEFTPATWIN) {
+    else {
         draw_object(leftWin_matrix, leftWin_texture_id);
     }
 
