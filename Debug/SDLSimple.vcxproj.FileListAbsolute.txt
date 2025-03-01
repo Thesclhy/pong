@@ -1,0 +1,2 @@
+C:\Users\liuha\Documents\CProject\SDLSimple\Debug\SDLSimple.exe
+C:\Users\liuha\Documents\CProject\Pong\Debug\Pong.exe
